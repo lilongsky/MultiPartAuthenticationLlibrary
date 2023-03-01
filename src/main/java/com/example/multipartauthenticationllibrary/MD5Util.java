@@ -25,7 +25,7 @@ public class MD5Util {
 
     int radix = 16;
 
-    return bigInteger.toString(radix).toUpperCase();
+    return (bigInteger.toString(radix).toUpperCase());
 
     }
 }

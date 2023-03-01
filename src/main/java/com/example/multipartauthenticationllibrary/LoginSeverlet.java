@@ -16,18 +16,18 @@ public class LoginSeverlet extends HttpServlet {
         response.setContentType("text/html");
         String username = request.getParameter("username");
         String md5psw = request.getParameter("md5psw");
-        //todo: check devopt output and rewrite if
+        //todo: redo MD5 current is different with front
         String devOpt = request.getParameter("devOpt");
         PrintWriter writer = response.getWriter();
-
-        if (devOpt.equals("PAP")){
-            if ((username.equals("tt"))&&(md5psw.equals(MD5Util.encode("tt")))){
+        md5psw = md5psw.toUpperCase();
+        //if (devOpt.equals("PAP")){
+            if ((username.equals("tt")) && md5psw.equals(MD5Util.encode("tt"))){
                 writer.write("success");
             }
             else {
-                writer.write("fail");
+                writer.write(MD5Util.encode("tt"));
             }
-        }
+        //}
         writer.flush();
     }
 
