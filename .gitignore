@@ -36,3 +36,5 @@ build/
 
 ### Mac OS ###
 .DS_Store
+/src/main/webapp/script/jquery.md5.js
+/src/main/webapp/script/jquery-3.6.3.min.js
