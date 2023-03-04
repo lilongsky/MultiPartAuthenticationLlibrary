@@ -3,7 +3,7 @@
 <html>
 <head>
     <title>JSP - Hello World</title>
-    <script src="script/jquery-3.6.3.min.js"></script>
+
     <script type="module" src="script/login.js"></script>
 </head>
 <body>

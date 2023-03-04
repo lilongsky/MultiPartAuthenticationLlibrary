@@ -36,5 +36,12 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### JS lib ###
 /src/main/webapp/script/jquery.md5.js
 /src/main/webapp/script/jquery-3.6.3.min.js
+/src/main/webapp/script/jq-hash.min.js
+/src/main/webapp/script/nanoid.js
+/node_modules/
+/package.json
+/package-lock.json

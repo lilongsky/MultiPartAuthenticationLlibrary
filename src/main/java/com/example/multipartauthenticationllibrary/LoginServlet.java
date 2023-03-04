@@ -1,40 +1,47 @@
 package com.example.multipartauthenticationllibrary;
 
 import java.io.*;
+import java.security.NoSuchAlgorithmException;
 
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 
-import java.net.URLEncoder;
-
 
 @WebServlet(name = "LoginServlet", value = "/login-first")
 public class LoginServlet extends HttpServlet {
+
     String testPSW = "tt";
-    String testMD5Psw;
+    String testSHA256Psw;
 
     {
         try {
-            testMD5Psw = MD5Util.encode(URLEncoder.encode(testPSW,"utf-8"));
-        } catch (UnsupportedEncodingException e) {
+            testSHA256Psw = MessageDigest.SHA256("tt");
+        } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
     }
+
     String testUsrName = "tt";
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
 
+
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
+        response.setContentType("text/html");
+        String devOpt = request.getParameter("devOpt");
+        if (devOpt.equals("CHAP")){
+
+        }
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html");
         String username = request.getParameter("username");
-        String md5psw = request.getParameter("md5psw");
+        String sha256psw = request.getParameter("sha256psw");
         String devOpt = request.getParameter("devOpt");
         PrintWriter writer = response.getWriter();
-        md5psw = md5psw.toUpperCase();
+        sha256psw = sha256psw.toUpperCase();
         if (devOpt.equals("PAP")){
-            if ((username.equals(testUsrName)) && md5psw.equals(testMD5Psw)){
+            if ((username.equals(testUsrName)) && sha256psw.equals(testSHA256Psw)){
                 writer.write("success");
             }
             else {
