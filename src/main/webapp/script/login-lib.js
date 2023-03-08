@@ -1,91 +1,99 @@
-//todo: fix package problem download all package and import
-import {nanoid} from "/nanoid";
-import SHA256 from '/crypto-js/sha256';
-import hmacSHA512 from 'crypto-js/hmac-sha512';
-export function LoginFirst(formid, userid, userpswid, md5pswid,urlOfFirstLogin) {
-    //const CryptoJS = require("crypto-js");
+import "./jquery-3.6.3.js"
+
+export async function LoginFirst(formid, userid, userpswid, md5pswid, urlOfFirstLogin) {
+
     let
         username = $('#' + userid),
         userpsw = $('#' + userpswid),
         sha256psw = $('#' + md5pswid),
-        devOpt = $('input[name=devOption]')
+        devOpt = $('input[name=devOption]:checked')
 
-    sha256psw.val(SHA256(encodeURIComponent(userpsw.val())));
-    function PAPPost(url){
+    async function SHA256Hex(message) {
+        const msgUint8 = new TextEncoder().encode(message); // encode as (utf-8) Uint8Array
+        const hashBuffer = await crypto.subtle.digest("SHA-256", msgUint8); // hash the message
+        const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
+        // convert bytes to hex string
+        return hashArray
+            .map((b) => b.toString(16).padStart(2, "0"))
+            .join("");
+    }
+
+    sha256psw.val(await SHA256Hex(userpsw.val()));
+
+    function PAPPost(url) {
         $.post(url,
             {
-                "code":1,
+                "code": 1,
                 "username": username.val(),
-                "md5psw": sha256psw.val(),
+                "sha256psw": sha256psw.val(),
                 "devOpt": devOpt.val()
-            },"text")
+            }, "text")
 
             .done(function (data) {
-                console.log(data);
                 if (data === "success") {
-                    alert("login success");
+                    alert("PAP login success");
                 } else {
-                    alert("login fail");
+                    alert("PAP login fail");
                 }
             })
             .fail(function () {
-                alert("unknow error");
+                alert("PAP unknow error");
             })
     }
-    
-    function CHAPGetRandomValue(url,id) {
+    function CHAPGetRandomValue(url, id) {
         $.get(url,
             {
-                "id":id,
+                "id": id,
                 "devOpt": devOpt.val()
-            },"text"
-        ).done(function (data){
-                return data;
+            }, "json"
+        ).done(function (data) {
+
+            CHAPPost(urlOfFirstLogin,id,data);
+
         }).fail(function (data) {
             return data;
         })
     }
 
-    function CHAPPost(url,id,cValue) {
+    async function CHAPPost(url, id, cValueJson) {
+
+        if (cValueJson.id !== id) {
+            alert("Id mismatch");
+        }
+        let randomValueWithID = cValueJson.randomValue;
+        let cPsw = await SHA256Hex(sha256psw.val() + randomValueWithID)
+        console.log(id);
+        console.log(username.val());
+        console.log(cPsw);
+        console.log(devOpt.val());
         $.post(url,
             {
-                "id":id,
-
-            }
-        )
+                "id": id,
+                "username": username.val(),
+                "sha256psw": cPsw,
+                "devOpt": devOpt.val()
+            })
+            .done(function (data) {
+                if (data === "success") {
+                    alert("CHAP login success");
+                } else {
+                    alert("CHAP login fail");
+                }
+            })
+            .fail(function () {
+                alert("CHAP unknow error");
+            })
     }
-    
-    if (devOpt.val() === "PAP"){
+
+    if (devOpt.val() === "PAP") {
+        alert("PAP");
         PAPPost(urlOfFirstLogin);
-    }else if (devOpt.val() === "CHAP"){
-        let challengeID = nanoid(16);
-        let challengeValue = CHAPGetRandomValue(urlOfFirstLogin,challengeID);
-
-        
+    } else if (devOpt.val() === "CHAP") {
+        alert("CHAP");
+        let array = new Uint32Array(1);
+        window.crypto.getRandomValues(array);
+        let challengeID = array[0].toString();
+        CHAPGetRandomValue(urlOfFirstLogin, challengeID);
     }
-
-
-//     $.post({
-//         url: "login-first", //url dev input
-//         async: true,
-//         cache: false,
-//         dataType: "text",
-//         data: {
-//             "username": username.val(),
-//             "sha256psw": sha256psw.val(),
-//             "devOpt": devOpt.val()
-//         }
-//     })
-//         .done(function (data) {
-//             console.log(data);
-//             if (data === "success") {
-//                 alert("login success");
-//             } else {
-//                 alert("login fail");
-//             }
-//         })
-//         .fail(function () {
-//             alert("unknow error");
-//         })
- }
+}
 
