@@ -62,10 +62,6 @@ export async function LoginFirst(formid, userid, userpswid, md5pswid, urlOfFirst
         }
         let randomValueWithID = cValueJson.randomValue;
         let cPsw = await SHA256Hex(sha256psw.val() + randomValueWithID)
-        console.log(id);
-        console.log(username.val());
-        console.log(cPsw);
-        console.log(devOpt.val());
         $.post(url,
             {
                 "id": id,

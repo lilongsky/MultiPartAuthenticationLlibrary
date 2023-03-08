@@ -17,8 +17,4 @@ public class MessageDigest {
         byte[] hash = digest.digest(message.getBytes(StandardCharsets.UTF_8));
         return new String (Hex.encode(hash));
     }
-
-
-
-
 }
